@@ -1,9 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plot
 
+N1 = 440
+N2 = 400
+DIM = 2 + 1 
 class MSE:
     def __init__(self, X , y ):
-        self.w = np.inv( X.T.dot(X) ).dot(X.T).dot(y)
+        self.w = np.linalg.inv( X.T.dot(X) ).dot(X.T).dot(y)
     def g(self,X):
         return X.dot(self.w)
     
@@ -22,6 +25,10 @@ def generate_data(  ):
     return x1 , y1 ,  x2 , y2
 
 if __name__ == "__main__":
+    x1 , y1 , x2 , y2 = generate_data()
+    plot.axis((-6,6,-6,6))
+    plot.scatter(x1[0,:],x1[1,:],marker=".")
+    plot.scatter(x2[0,:],x2[1,:],marker=".")
     X = np.concatenate( [x1,x2] , axis = 1 )
     X = X.T
     y = np.concatenate( [y1,y2] , axis = 0 )
@@ -29,10 +36,11 @@ if __name__ == "__main__":
     mse = MSE( X , y )
 
     temp = np.linspace(-6,6,100)
-    X_ = np.ones( 100 ,3 )
-    X_[:,0] = temp
-    X_[:,1] = temp
+    X_ = np.ones( ( 100*100 ,3 ) )
+    X_[:,0] = np.concatenate( [temp for i in range(100) ]  )
+    X_[:,1] = [ i for i in temp  for j in range(100)]
     Z = mse.g(X_ )
+    Z = Z.reshape((100,100)  )
     plot.contour(  temp  , temp , Z , levels=[0] )
     plot.show()
     
