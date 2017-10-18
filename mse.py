@@ -43,7 +43,3 @@ if __name__ == "__main__":
     Z = Z.reshape((100,100)  )
     plot.contour(  temp  , temp , Z , levels=[0] )
     plot.show()
-    
-
-
-    
