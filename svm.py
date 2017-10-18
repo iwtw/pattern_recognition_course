@@ -1,5 +1,5 @@
 import numpy as np
-import matplotlib.plytplot as plot
+import matplotlib.pyplot as plot
 import scipy.optimize as optimize
 import sys
 
@@ -16,17 +16,17 @@ class SVM:
         constraints = (
             {
                 'type':'eq',
-                'fun' : lambda lap : lap.T.dot(y) 
+                'fun' : lambda lap : lap.T.dot(y) ,
                 'jac' : lambda lap : np.sum(y)
             },
             {
                 'type':'ineq',
-                'fun' : lambda lap : lap
+                'fun' : lambda lap : lap,
                 'jac' : lambda lap : np.ones_like(lap)
             },
             {
                 'type':'ineq',
-                'fun' : lambda lap : -1.0 * ( lap - C )
+                'fun' : lambda lap : -1.0 * ( lap - C ),
                 'jac' : lambda lap : -1.0 * np.ones_like( lap )
             }
         )
@@ -44,7 +44,9 @@ class SVM:
                     d[i] += 0.5 * lap[j] * y[i] * y[j] * prod_X[i,j]
             d -= np.ones_like( d ) 
             return d
-        optimize( func , np.zeros( X.shape[0] ), jac = func_deriv , constraints = constraints  method = 'SLSQP' , options= {'disp':True})
+        res = optimize( func , np.zeros( X.shape[0] ), jac = func_deriv , constraints = constraints ,  method = 'SLSQP' , options= {'disp':True})
+        self.lap = res.x
+        printf(self.lap)
         
         
 def generate_data(  ):
@@ -66,3 +68,7 @@ if __name__ == "__main__":
     plot.axis((-6,6,-6,6))
     plot.scatter(x1[0,:],x1[1,:],marker=".")
     plot.scatter(x2[0,:],x2[1,:],marker=".")
+    X = np.concatenate( [x1,x2] , axis = 1 )
+    X = X.T
+    svm = SVM( X , y , C = 1.0 )
+    print(svm.lap)
