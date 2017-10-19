@@ -11,27 +11,26 @@ class MSE:
         return X.dot(self.w)
     
 def generate_data(  ):
-    x1 = np.ones( ( DIM , N1 ) )
-    x2 = np.ones ( ( DIM , N2 ) )
+    x1 = np.ones( ( N1 , DIM ) )
+    x2 = np.ones ( ( N2 , DIM ) )
 
-    x1[0,:] = -1.7 + 1.1 * np.random.randn(N1)
-    x1[1,:] = 1.6 + 0.9 * np.random.randn(N1)
+    x1[:,0] = -1.7 + 1.1 * np.random.randn(N1)
+    x1[:,1] = 1.6 + 0.9 * np.random.randn(N1)
 
-    x2[0,:] = 1.3 + 1.0 * np.random.randn(N2)
-    x2[1,:] = -1.5 + 0.8 * np.random.randn(N2)
+    x2[:,0] = 1.3 + 1.0 * np.random.randn(N2)
+    x2[:,1] = -1.5 + 0.8 * np.random.randn(N2)
     
-    y1 = np.ones((N1,1))
-    y2 = -1 * np.ones((N2,1))
+    y1 = np.ones(N1)
+    y2 = -1 * np.ones(N2)
     return x1 , y1 ,  x2 , y2
 
-if __name__ == "__main__":
-    x1 , y1 , x2 , y2 = generate_data()
-    plot.axis((-6,6,-6,6))
-    plot.scatter(x1[0,:],x1[1,:],marker=".")
-    plot.scatter(x2[0,:],x2[1,:],marker=".")
-    X = np.concatenate( [x1,x2] , axis = 1 )
-    X = X.T
-    y = np.concatenate( [y1,y2] , axis = 0 )
+if __name__ == "__main__" :
+    x1 , y1 ,  x2 , y2  = generate_data()
+    plot.axis( (-6,6,-6,6) )
+    plot.scatter(x1[:,0],x1[:,1],marker=".")
+    plot.scatter(x2[:,0],x2[:,1],marker=".")
+    X = np.concatenate( [x1,x2] ,axis = 0 )
+    y = np.concatenate( [y1,y2], axis = 0 )
 
     mse = MSE( X , y )
 
@@ -41,5 +40,7 @@ if __name__ == "__main__":
     X_[:,1] = [ i for i in temp  for j in range(100)]
     Z = mse.g(X_ )
     Z = Z.reshape((100,100)  )
-    plot.contour(  temp  , temp , Z , levels=[0] )
-    plot.show()
+    ct = plot.contour(  temp  , temp , Z , levels=[0] )
+    ct.collections[0].set_label('mse')
+    plot.legend()
+    plot.save("mse.png")

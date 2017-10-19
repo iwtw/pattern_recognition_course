@@ -3,8 +3,8 @@ import matplotlib.pyplot as plot
 import scipy.optimize as optimize
 import sys
 
-N1 = 12
-N2 = 200
+N1 = 440
+N2 = 400
 DIM = 2 + 1 
 
 class SVM:
@@ -38,8 +38,8 @@ class SVM:
         bounds[:,1] = C * np.ones(X.shape[0])
         res = optimize.minimize( func , np.zeros( X.shape[0] ), jac = func_deriv , constraints = constraints ,  bounds = bounds , method = "SLSQP",  options= {'disp':True})
         self.lap = res.x
-        print(self.lap)
-        print(np.inner( self.lap , y) )
+       # print(self.lap)
+       # print(np.inner( self.lap , y) )
         self.w = np.sum( np.reshape( self.lap * y,(X.shape[0],1) ) * X , axis = 0  )
         self.w0 = -1.0/(X.shape[0]) * np.sum ( X.dot( self.w )  , axis = 0  )
 
@@ -48,28 +48,27 @@ class SVM:
         
         
 def generate_data(  ):
-    x1 = np.ones( ( DIM , N1 ) )
-    x2 = np.ones ( ( DIM , N2 ) )
+    x1 = np.ones( ( N1 , DIM ) )
+    x2 = np.ones ( ( N2 , DIM ) )
 
-    x1[0,:] = -1.7 + 1.1 * np.random.randn(N1)
-    x1[1,:] = 1.6 + 0.9 * np.random.randn(N1)
+    x1[:,0] = -1.7 + 1.1 * np.random.randn(N1)
+    x1[:,1] = 1.6 + 0.9 * np.random.randn(N1)
 
-    x2[0,:] = 1.3 + 1.0 * np.random.randn(N2)
-    x2[1,:] = -1.5 + 0.8 * np.random.randn(N2)
+    x2[:,0] = 1.3 + 1.0 * np.random.randn(N2)
+    x2[:,1] = -1.5 + 0.8 * np.random.randn(N2)
     
     y1 = np.ones(N1)
     y2 = -1 * np.ones(N2)
     return x1 , y1 ,  x2 , y2
 
-if __name__ == "__main__":
-    x1 , y1 , x2 , y2 = generate_data()
-    plot.axis((-6,6,-6,6))
-    plot.scatter(x1[0,:],x1[1,:],marker=".",color='c')
-    plot.scatter(x2[0,:],x2[1,:],marker=".",color='m')
-    X = np.concatenate( [x1,x2] , axis = 1 )
-    X = X.T
-    y = np.concatenate( [y1,y2] , axis = 0  )
-    print(X.shape,y.shape)
+if __name__ == "__main__" :
+    x1 , y1 ,  x2 , y2  = generate_data()
+    plot.axis( (-6,6,-6,6) )
+    color1 = plot.scatter(x1[:,0],x1[:,1],marker=".").get_facecolor()
+    color2 = plot.scatter(x2[:,0],x2[:,1],marker=".").get_facecolor()
+    X = np.concatenate( [x1,x2] ,axis = 0 )
+    y = np.concatenate( [y1,y2], axis = 0 )
+
     svm = SVM( X , y , C = 10.0 )
     print(svm.lap)
 
@@ -83,7 +82,7 @@ if __name__ == "__main__":
     print(sv_idx)
     sv_idx1 = sv_idx [ np.nonzero( sv_idx <= N1) ] 
     sv_idx2 = sv_idx [ np.nonzero( sv_idx > N1 ) ] 
-    plot.scatter( X[sv_idx1, 0 ] , X[sv_idx1,1] ,marker = "x" , color='c'  )
-    plot.scatter( X[sv_idx2 , 0] , X[sv_idx2,1] , marker ='x' , color='m')
+    plot.scatter( X[sv_idx1, 0 ] , X[sv_idx1,1] ,marker = "x" , color=color1  )
+    plot.scatter( X[sv_idx2 , 0] , X[sv_idx2,1] , marker ='x' , color=color2 )
     plot.contour(  temp  , temp , Z , levels=[0] )
     plot.show()
