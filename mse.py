@@ -1,4 +1,7 @@
 import numpy as np
+
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plot
 
 N1 = 440
@@ -43,4 +46,4 @@ if __name__ == "__main__" :
     ct = plot.contour(  temp  , temp , Z , levels=[0] )
     ct.collections[0].set_label('mse')
     plot.legend()
-    plot.save("mse.png")
+    plot.savefig("mse.png")
