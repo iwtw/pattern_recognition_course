@@ -1,4 +1,6 @@
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plot
 from perceptron import Perceptron
 from mse import MSE
@@ -55,6 +57,8 @@ if __name__ == "__main__" :
     Z = perceptron.g( X_ )
     plot_plane( temp , Z , 'perceptron' , color = [0.5,0.2,0.8] )
     
+    y[range(N1)] *= (N1+N2)/N1
+    y[N1 + np.array(range(N2))] *= (N1+N2)/N2
     mse = MSE( X , y )
     Z = mse.g( X_ )
     plot_plane( temp , Z , 'MSE', color = [0.2,0.6,0.7])
@@ -62,8 +66,10 @@ if __name__ == "__main__" :
     svm = SVM( X , y , C = 10.0 )
     Z = svm.g( X_ )
     plot_plane( temp , Z , 'SVM' , color = [0.3,0.2,0.3] )
-    sv_idx = np.nonzero( svm.lap > 1e-10 )[0]
-    sv_idx1 = sv_idx [ np.nonzero( sv_idx <= N1 ) ] 
-    sv_idx2 = sv_idx [ np.nonzero( sv_idx > N1 ) ]
+    sv_idx1 = svm.sv_idx [ np.flatnonzero( svm.sv_idx < N1 ) ] 
+    sv_idx2 = svm.sv_idx [ np.flatnonzero( svm.sv_idx >= N1 ) ]
+    plot.scatter( X[sv_idx1, 0 ] , X[sv_idx1,1] ,marker = "x" , color=color1  )
+    plot.scatter( X[sv_idx2 , 0] , X[sv_idx2,1] , marker ='x' , color=color2 )
 
-    plot.show()
+    #plot.show()
+    plot.savefig("all.png")

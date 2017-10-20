@@ -3,47 +3,41 @@ import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plot
+from utils import *
 
 N1 = 440
 N2 = 400
 DIM = 2 + 1 
+y_ = [  np.concatenate( [1000*y1,y2] ) , np.concatenate( [y1,1000*y2] ), np.concatenate( [(N1+N2)/N1*y1 , (N1+N2)/N2*y2] ) ]
 class MSE:
     def __init__(self, X , y ):
         self.w = np.linalg.inv( X.T.dot(X) ).dot(X.T).dot(y)
     def g(self,X):
         return X.dot(self.w)
     
-def generate_data(  ):
-    x1 = np.ones( ( N1 , DIM ) )
-    x2 = np.ones ( ( N2 , DIM ) )
-
-    x1[:,0] = -1.7 + 1.1 * np.random.randn(N1)
-    x1[:,1] = 1.6 + 0.9 * np.random.randn(N1)
-
-    x2[:,0] = 1.3 + 1.0 * np.random.randn(N2)
-    x2[:,1] = -1.5 + 0.8 * np.random.randn(N2)
-    
-    y1 = np.ones(N1)
-    y2 = -1 * np.ones(N2)
-    return x1 , y1 ,  x2 , y2
-
 if __name__ == "__main__" :
-    x1 , y1 ,  x2 , y2  = generate_data()
-    plot.axis( (-6,6,-6,6) )
-    plot.scatter(x1[:,0],x1[:,1],marker=".")
-    plot.scatter(x2[:,0],x2[:,1],marker=".")
+    x1 , y1 ,  x2 , y2  = generate_data(N1 , N2 , DIM)
+
     X = np.concatenate( [x1,x2] ,axis = 0 )
     y = np.concatenate( [y1,y2], axis = 0 )
 
-    mse = MSE( X , y )
 
+    X_ =np.ones((100*100,3))
     temp = np.linspace(-6,6,100)
-    X_ = np.ones( ( 100*100 ,3 ) )
     X_[:,0] = np.concatenate( [temp for i in range(100) ]  )
     X_[:,1] = [ i for i in temp  for j in range(100)]
-    Z = mse.g(X_ )
-    Z = Z.reshape((100,100)  )
-    ct = plot.contour(  temp  , temp , Z , levels=[0] )
-    ct.collections[0].set_label('mse')
-    plot.legend()
-    plot.savefig("mse.png")
+
+    
+    plot.figure()
+    plot_data(x1,y1,x2,y2)
+    for i in range(3):
+
+        name = "y1:%.1f,y2:%.1f"%(y_[i][0], y_[i][N1] )
+        p = MSE( X , y_[i]  )
+        
+        Z = p.g(X_)
+        Z_ = Z.reshape((100,100))
+        plot_plane( temp ,  Z_ , name , color = np.random.uniform( 0,0.7,3 ) )
+    plot.savefig("mse.png",dpi=200)
+    #plot.show()
+

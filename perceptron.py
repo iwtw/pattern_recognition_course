@@ -1,5 +1,8 @@
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plot
+from utils import *
 
 LEARNING_RATE = 1e-6
 N1 = 440
@@ -8,8 +11,10 @@ DIM = 2 + 1
 
 
 class Perceptron:
-    def __init__( self ):
-        self.w = np.random.randn( DIM  )
+    def __init__( self , learning_rate = 1e-6 , w = np.zeros(DIM) ):
+
+        self.w = w
+        self.learning_rate = learning_rate
     def loss (  self,x , y  ):
         
         "w shapes [DIM]"
@@ -19,46 +24,44 @@ class Perceptron:
     def grad (self, x , y):
         return y.dot(x)
     def update ( self,x , y  ):
-        self.w += -1.0 * LEARNING_RATE * self.grad(x,y)
+        self.w += -1.0 * self.learning_rate * self.grad(x,y)
     def g(self,x):
         return  x.dot(self.w)
 
 
-def generate_data(  ):
-    x1 = np.ones( ( N1 , DIM ) )
-    x2 = np.ones ( ( N2 , DIM ) )
-
-    x1[:,0] = -1.7 + 1.1 * np.random.randn(N1)
-    x1[:,1] = 1.6 + 0.9 * np.random.randn(N1)
-
-    x2[:,0] = 1.3 + 1.0 * np.random.randn(N2)
-    x2[:,1] = -1.5 + 0.8 * np.random.randn(N2)
-    
-    y1 = np.ones(N1)
-    y2 = -1 * np.ones(N2)
-    return x1 , y1 ,  x2 , y2
-
 if __name__ == "__main__" :
-    x1 , y1 ,  x2 , y2  = generate_data()
-    plot.axis( (-6,6,-6,6) )
-    plot.scatter(x1[:,0],x1[:,1],marker=".")
-    plot.scatter(x2[:,0],x2[:,1],marker=".")
+    x1 , y1 ,  x2 , y2  = generate_data(N1 , N2 , DIM)
+
     X = np.concatenate( [x1,x2] ,axis = 0 )
     y = np.concatenate( [y1,y2], axis = 0 )
 
-    perceptron = Perceptron()
-    for it in range(1000):
-        perceptron.update( X , y )
-        print(perceptron.loss(X,y))
 
-    hyperplane = np.zeros((100,100))
-    for i_idx,i_v in enumerate (np.linspace(-6,6,100)):
-        for j_idx ,j_v in enumerate ( np.linspace(-6,6,100)):
-            g = perceptron.g( np.array( [i_v,j_v,1] ) )
-            hyperplane[i_idx,j_idx] = g 
+    X_ =np.ones((100*100,3))
+    temp = np.linspace(-6,6,100)
+    X_[:,0] = np.concatenate( [temp for i in range(100) ]  )
+    X_[:,1] = [ i for i in temp  for j in range(100)]
+    #Z = perceptron.g(X_)
+    #Z = Z.reshape((100,100))
 
-    i = j = np.linspace(-6,6,100)
-    plot.contour(i,j,hyperplane,levels=[0])
-    #plot.contour(np.array( hyperplane).T,levels=[0])
-    #plot.scatter( hyperplane[0] , hyperplane[1],marker="." )
-    plot.show()
+    learning_rate = [10, 1e-6 , 1e-20]
+    for j in range(2):
+        plot.figure()
+        plot_data(x1,y1,x2,y2)
+        for i in range(3):
+            if j == 0 :
+                w = np.random.randn(3)
+                name = "lr:1e-06,w:r"
+            else :
+                w = 1e-3*np.ones(3)
+                name = "lr:%.0e,w:1e-3"%(learning_rate[i])
+
+            p = Perceptron( learning_rate[i] , w  )
+            for it in range(100):
+                p.update( X , y )
+            
+            Z = p.g(X_)
+            Z_ = Z.reshape((100,100))
+            plot_plane(temp ,  Z_ , name , color = np.random.uniform( 0,0.7,3 ) )
+        plot.savefig("perceptron{}.png".format(j),dpi=200)
+    #plot.show()
+

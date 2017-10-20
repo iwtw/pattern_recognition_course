@@ -1,11 +1,15 @@
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plot
 import scipy.optimize as optimize
 import sys
+from utils import *
 
 N1 = 440
 N2 = 400
 DIM = 2 + 1 
+C = [ 1 , 10 , 1000 ]
 
 class SVM:
     def __init__(self , X , y , C ):
@@ -27,7 +31,7 @@ class SVM:
                     loss += 0.5 * lap[i] * lap[j] * y[i] * y[j] * prod_X[i,j]
             loss -= np.sum( lap )
             return loss
-        def func_deriv( lap , sing = 1.0):
+        def func_deriv( lap , sign = 1.0):
             d = np.zeros_like( lap ) 
             for i in range( lap.shape[0] ):
                 for j in range( lap.shape[0]):
@@ -47,43 +51,44 @@ class SVM:
 
     def g(self,x):
         return x.dot(self.w) + self.w0
-        
-        
-def generate_data(  ):
-    x1 = np.ones( ( N1 , DIM ) )
-    x2 = np.ones ( ( N2 , DIM ) )
-
-    x1[:,0] = -1.7 + 1.1 * np.random.randn(N1)
-    x1[:,1] = 1.6 + 0.9 * np.random.randn(N1)
-
-    x2[:,0] = 1.3 + 1.0 * np.random.randn(N2)
-    x2[:,1] = -1.5 + 0.8 * np.random.randn(N2)
-    
-    y1 = np.ones(N1)
-    y2 = -1 * np.ones(N2)
-    return x1 , y1 ,  x2 , y2
 
 if __name__ == "__main__" :
-    x1 , y1 ,  x2 , y2  = generate_data()
-    plot.axis( (-6,6,-6,6) )
-    color1 = plot.scatter(x1[:,0],x1[:,1],marker=".").get_facecolor()
-    color2 = plot.scatter(x2[:,0],x2[:,1],marker=".").get_facecolor()
+    x1 , y1 ,  x2 , y2  = generate_data(N1,N2, DIM)
     X = np.concatenate( [x1,x2] ,axis = 0 )
     y = np.concatenate( [y1,y2], axis = 0 )
 
-    svm = SVM( X , y , C = 10.0 )
-    print(svm.lap)
+    #print(svm.lap)
 
     temp = np.linspace(-6,6,100)
     X_ = np.ones( ( 100*100 ,3 ) )
     X_[:,0] = np.concatenate( [temp for i in range(100) ]  )
     X_[:,1] = [ i for i in temp  for j in range(100)]
-    Z = svm.g(X_ )
-    Z = Z.reshape((100,100)  )
 
-    sv_idx1 = svm.sv_idx [ np.flatnonzero( svm.sv_idx <= N1) ] 
-    sv_idx2 = svm.sv_idx [ np.flatnonzero( svm.sv_idx > N1 ) ] 
-    plot.scatter( X[sv_idx1, 0 ] , X[sv_idx1,1] ,marker = "x" , color=color1  )
-    plot.scatter( X[sv_idx2 , 0] , X[sv_idx2,1] , marker ='x' , color=color2 )
-    plot.contour(  temp  , temp , Z , levels=[0] )
-    plot.show()
+
+    svm = []
+    Z_ = []
+    for c in C:
+        plot.figure()
+        color1 , color2 = plot_data( x1 ,y1, x2 ,y2)
+
+        svm.append(  SVM( X , y , C = c ) )
+        sv_idx1 = svm[-1].sv_idx [ np.flatnonzero( svm[-1].sv_idx < N1) ] 
+        sv_idx2 = svm[-1].sv_idx [ np.flatnonzero( svm[-1].sv_idx >= N1 ) ] 
+        plot.scatter( X[sv_idx1, 0 ] , X[sv_idx1,1] ,marker = "x" , color=color1  )
+        plot.scatter( X[sv_idx2 , 0] , X[sv_idx2,1] , marker ='x' , color=color2 )
+        
+        Z_.append( svm[-1].g(X_ ) )
+        Z_[-1] = Z_[-1].reshape((100,100)  )
+
+        plot_plane( temp , Z_[-1] , name = "C:%d"%(c) )
+        plot.savefig("svm_C:{}_with_sv.png".format(c))
+
+
+    plot.figure()
+    plot_data(x1,y1,x2,y2)
+    for i in range(len(C)):
+        plot_plane( temp , Z_[i]  , name = "C:%d"%(C[i])  )
+    plot.savefig("svm.png")
+
+
+   # plot.show()
