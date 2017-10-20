@@ -38,10 +38,12 @@ class SVM:
         bounds[:,1] = C * np.ones(X.shape[0])
         res = optimize.minimize( func , np.zeros( X.shape[0] ), jac = func_deriv , constraints = constraints ,  bounds = bounds , method = "SLSQP",  options= {'disp':True})
         self.lap = res.x
-       # print(self.lap)
-       # print(np.inner( self.lap , y) )
-        self.w = np.sum( np.reshape( self.lap * y,(X.shape[0],1) ) * X , axis = 0  )
-        self.w0 = -1.0/(X.shape[0]) * np.sum ( X.dot( self.w )  , axis = 0  )
+        self.sv_idx = np.flatnonzero( self.lap > 1e-10 )
+        sv = X[self.sv_idx]
+        y_sv = y[self.sv_idx]
+
+        self.w =  np.sum(  np.reshape ( self.lap[self.sv_idx] * y_sv , (sv.shape[0],1) ) *  sv , axis = 0 ) 
+        self.w0 = -1.0/( sv.shape[0] ) * np.sum ( sv.dot( self.w )  , axis = 0  )
 
     def g(self,x):
         return x.dot(self.w) + self.w0
@@ -78,10 +80,9 @@ if __name__ == "__main__" :
     X_[:,1] = [ i for i in temp  for j in range(100)]
     Z = svm.g(X_ )
     Z = Z.reshape((100,100)  )
-    sv_idx = np.nonzero( svm.lap > 1e-10 )[0]
-    print(sv_idx)
-    sv_idx1 = sv_idx [ np.nonzero( sv_idx <= N1) ] 
-    sv_idx2 = sv_idx [ np.nonzero( sv_idx > N1 ) ] 
+
+    sv_idx1 = svm.sv_idx [ np.flatnonzero( svm.sv_idx <= N1) ] 
+    sv_idx2 = svm.sv_idx [ np.flatnonzero( svm.sv_idx > N1 ) ] 
     plot.scatter( X[sv_idx1, 0 ] , X[sv_idx1,1] ,marker = "x" , color=color1  )
     plot.scatter( X[sv_idx2 , 0] , X[sv_idx2,1] , marker ='x' , color=color2 )
     plot.contour(  temp  , temp , Z , levels=[0] )

@@ -62,5 +62,8 @@ if __name__ == "__main__" :
     svm = SVM( X , y , C = 10.0 )
     Z = svm.g( X_ )
     plot_plane( temp , Z , 'SVM' , color = [0.3,0.2,0.3] )
+    sv_idx = np.nonzero( svm.lap > 1e-10 )[0]
+    sv_idx1 = sv_idx [ np.nonzero( sv_idx <= N1 ) ] 
+    sv_idx2 = sv_idx [ np.nonzero( sv_idx > N1 ) ]
 
     plot.show()
