@@ -40,13 +40,17 @@ class SVM:
             return d
         bounds = np.zeros((X.shape[0],2))
         bounds[:,1] = C * np.ones(X.shape[0])
-        res = optimize.minimize( func , np.zeros( X.shape[0] ), jac = func_deriv , constraints = constraints ,  bounds = bounds , method = "SLSQP",  options= {'disp':True})
+        res = optimize.minimize( func , np.zeros( X.shape[0] ), 
+                jac = func_deriv ,constraints = constraints , 
+                bounds = bounds ,
+                method = "SLSQP",  options= {'disp':True})
         self.lap = res.x
         self.sv_idx = np.flatnonzero( self.lap > 1e-10 )
         sv = X[self.sv_idx]
         y_sv = y[self.sv_idx]
 
-        self.w =  np.sum(  np.reshape ( self.lap[self.sv_idx] * y_sv , (sv.shape[0],1) ) *  sv , axis = 0 ) 
+        self.w =  np.sum(  np.reshape ( self.lap[self.sv_idx] * y_sv ,
+       (sv.shape[0],1) ) *  sv , axis = 0 ) 
         self.w0 = -1.0/( sv.shape[0] ) * np.sum ( sv.dot( self.w )  , axis = 0  )
 
     def g(self,x):
@@ -87,7 +91,7 @@ if __name__ == "__main__" :
     plot.figure()
     plot_data(x1,y1,x2,y2)
     for i in range(len(C)):
-        plot_plane( temp , Z_[i]  , name = "C:%d"%(C[i])  )
+        plot_plane( temp , Z_[i]  , name = "C:%d"%(C[i]) , color = np.random.uniform(0,0.7,3)  )
     plot.savefig("svm.png")
 
 

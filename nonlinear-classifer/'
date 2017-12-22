@@ -1,0 +1,27 @@
+import torch
+import numpy as np
+
+NUM_CLASSES = 5 #二类分类任务
+NUM_SAMPLES = 1000#每类的样本个数
+HIDDEN_SIZES = [ 20,100,500,1000 ];
+NUM_DIMS = 3 
+MEAN =[ [-2,-2,-2] , [2,-2,-2] , [-2,2,-2] , [-2,-2,2] , [2,2,2] ]
+STDDEV = [ [0.8,0.9,0.7] , [0.9,0.9,0.8] , [0.9,0.8,0.7],[0.7,0.9,0.8],[1.0,0.9,0.9] ]
+
+class NN:
+    def __init__(self,hidden_size):
+        self.fc1 = torch.nn.Linear(3 , hidden_size , bias = True )
+        self.fc2 = torch.nn.Linear(hidden_size , NUM_CLASSES , bias = True )
+    def forward(x):
+        x = self.fc1(x)
+        x = self.fc2(x)
+        return x
+
+if __name__=="__main__":
+
+    x_list = []
+    for i in range(NUM_CLASSES):
+        x_list.append(generate_data(num_samples = NUM_SAMPLES , num_dims = NUM_DIMS , )  )
+    nn = NN()
+    nn.forward(  )
+

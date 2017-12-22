@@ -5,24 +5,11 @@ import matplotlib.pyplot as plot
 from perceptron import Perceptron
 from mse import MSE
 from svm import SVM
+from utils import *
 
 N1 = 440
 N2 = 400
 DIM = 2 + 1 
-
-def generate_data(  ):
-    x1 = np.ones( ( N1 , DIM ) )
-    x2 = np.ones ( ( N2 , DIM ) )
-
-    x1[:,0] = -1.7 + 1.1 * np.random.randn(N1)
-    x1[:,1] = 1.6 + 0.9 * np.random.randn(N1)
-
-    x2[:,0] = 1.3 + 1.0 * np.random.randn(N2)
-    x2[:,1] = -1.5 + 0.8 * np.random.randn(N2)
-    
-    y1 = np.ones(N1)
-    y2 = -1 * np.ones(N2)
-    return x1 , y1 ,  x2 , y2
 
 def plot_plane( temp , Z ,  name , color ):
     Z = Z.reshape( ( temp.shape[0] , temp.shape[0])  )
@@ -32,7 +19,7 @@ def plot_plane( temp , Z ,  name , color ):
     plot.legend()
 
 if __name__ == "__main__" :
-    x1 , y1 ,  x2 , y2  = generate_data()
+    x1 , y1 ,  x2 , y2  = generate_data(N1,N2,DIM)
     plot.axis( (-6,6,-6,6) )
     color1 = plot.scatter(x1[:,0],x1[:,1],marker=".").get_facecolor()
     color2 =  plot.scatter(x2[:,0],x2[:,1],marker=".").get_facecolor()
@@ -50,7 +37,7 @@ if __name__ == "__main__" :
     X_[:,1] = [ i for i in temp  for j in range(100)]
     
 
-    perceptron = Perceptron()
+    perceptron = Perceptron(w = np.random.randn(DIM))
     for it in range(1000):
         perceptron.update(X,y  )
 
@@ -72,4 +59,4 @@ if __name__ == "__main__" :
     plot.scatter( X[sv_idx2 , 0] , X[sv_idx2,1] , marker ='x' , color=color2 )
 
     #plot.show()
-    plot.savefig("all.png")
+    plot.savefig("all.png",dpi=200)

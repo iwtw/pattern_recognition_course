@@ -1,0 +1,20 @@
+Optimization terminated successfully.    (Exit mode 0)
+            Current function value: -256.65277875249075
+            Iterations: 18
+            Function evaluations: 35
+            Gradient evaluations: 18
+Optimization terminated successfully.    (Exit mode 0)
+            Current function value: -16.509756223788727
+            Iterations: 14
+            Function evaluations: 20
+            Gradient evaluations: 14
+Optimization terminated successfully.    (Exit mode 0)
+            Current function value: -128.81669470228312
+            Iterations: 16
+            Function evaluations: 59
+            Gradient evaluations: 16
+Iteration limit exceeded    (Exit mode 9)
+            Current function value: -12387.413475571315
+            Iterations: 101
+            Function evaluations: 401
+            Gradient evaluations: 101

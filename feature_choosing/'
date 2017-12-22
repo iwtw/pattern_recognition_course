@@ -1,0 +1,70 @@
+import numpy as np
+
+class GA:
+    def __init__(self, num_dims , population_size = 500  , initial_population = None  ):
+        self.population = initial_population
+        if self.population == None:
+            self.population = np.random.uniform( 0 , 1 , (population_size,num_dims) )
+            self.population[self.population >=0.5 ] = 1
+            self.population[self.population < 0.5 ] = 0
+        self.population = np.array( self.population )
+    def evolve( self , num_iters , combination_rate , mutation_rate  ):
+        for it in range( num_iters ):
+            for i in range( self.population.shape[0] ):
+                #选择复制
+
+
+
+                for j in range( self.population.shape[1]  ):
+                    x = np.random.uniform( 0,1 )
+                    #交叉
+                    if x < combination_rate:
+                        ii = np.floor( np.random.uniform( 0 , self.population.shape[0] ) )
+
+                        temp = self.population[i][j]
+                        self.population[i][j]  = self.population[ii][j]
+                        self.population[ii][j] = temp
+                    x = np.random.uniform( 0 , 1 )
+                    #变异
+                    if x < mutation_rate:
+                        self.population[i][j] ^= 1 
+
+
+
+NUM_ITERS = 1000
+MUTATION_RATE = 0.01
+COMBINATION_RATE = 0.5
+
+NUM_DIMS = 6
+NUM_CLASSES = 3
+N = 500
+STDDEV = [
+        [0.8,0.9,0.7,1.5,1.4,1.1],
+        [0.9,0.7,0.8,1.2,1.1,1.0],
+        [0.7,0.8,0.9,1.3,1.2,1.3] 
+        ]
+MEAN = [
+        [-2,-1,2,-1,-1,-2],
+        [1,-2,-2,1,-1,-1],
+        [-2,2,-1,-1,1,1]
+        ]
+
+
+def generate_data():
+    x = np.zeros( (N*NUM_CLASSES , NUM_DIMS ) , dtype = np.float32 )
+    y = np.ones(  N*NUM_CLASSES  )
+    for i in range( NUM_CLASSES ):  
+        y[i*N:(i+1)*N] *= i+1
+
+    for i in range( NUM_CLASSES ):
+        x[i*N:(i+1)*N] = np.random.normal( MEAN[I] , STDDEV[I] , size = N )
+        
+        
+    return x,y
+if __name__ =="__main__":
+    x , y = generate_data()
+
+
+    
+
+

@@ -12,17 +12,17 @@ DIM = 2 + 1
 
 class Perceptron:
     def __init__( self , learning_rate = 1e-6 , w = np.zeros(DIM) ):
-
         self.w = w
         self.learning_rate = learning_rate
     def loss (  self,x , y  ):
-        
         "w shapes [DIM]"
         " x shapes [N,DIM] , the augmented matrice of training samples "
         "y shapes [N] , the labels"
-        return  x.dot(self.w).dot(y)
+        wrong_idx = np.flatnonzero( x.dot(self.w) * y < 0 ) 
+        return  -y[wrong_idx].dot( x[wrong_idx]).dot(self.w)
     def grad (self, x , y):
-        return y.dot(x)
+        wrong_idx = np.flatnonzero( x.dot(self.w) * y < 0 )
+        return -y[wrong_idx].dot( x[wrong_idx] )
     def update ( self,x , y  ):
         self.w += -1.0 * self.learning_rate * self.grad(x,y)
     def g(self,x):
@@ -56,7 +56,7 @@ if __name__ == "__main__" :
                 name = "lr:%.0e,w:1e-3"%(learning_rate[i])
 
             p = Perceptron( learning_rate[i] , w  )
-            for it in range(100):
+            for it in range(5000):
                 p.update( X , y )
             
             Z = p.g(X_)
