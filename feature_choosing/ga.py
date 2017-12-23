@@ -129,7 +129,7 @@ def generate_data():
     x = np.zeros( (N*NUM_CLASSES , NUM_DIMS ) , dtype = np.float32 )
     y = np.ones(  N*NUM_CLASSES   , dtype = np.int8 )
     for i in range( NUM_CLASSES ):  
-        y[i*N:(i+1)*N] *= i+1
+        y[i*N:(i+1)*N] *= i
 
     for i in range( NUM_CLASSES ):
         x[i*N:(i+1)*N] = np.random.normal( MEAN[i] , STDDEV[i] , size = (N,NUM_DIMS) )
